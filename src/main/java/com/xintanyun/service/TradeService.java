@@ -1,5 +1,6 @@
 package com.xintanyun.service;
 
+import com.xintanyun.entity.Trade;
 import com.xintanyun.entity.Transaction;
 
 import java.math.BigInteger;
@@ -11,5 +12,7 @@ public interface TradeService {
 
     void tradeError(Long userId, BigInteger amount);
 
-    void tradeBatch(Long userId, BigInteger amount, List<Transaction> transactions);
+    void tradeBatch(Long userId, BigInteger amount, List<Transaction> transactions, List<Trade> trades);
+
+    void tradeBatch2(List<Long> userIds, List<BigInteger> amounts, List<Transaction> transactions, List<Trade> trades);
 }

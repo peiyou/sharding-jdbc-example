@@ -5,19 +5,20 @@ import lombok.Setter;
 
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 
 @Getter
 @Setter
-public class Transaction implements Serializable {
+public class TableId implements Serializable {
 
     @Id
-    private Long id;
+    private String tableName;
 
-    private Long userId;
+    private Long currentId;
 
-    private BigInteger amount;
+    private Long stepValue;
 
     private Date createdTime;
+
+    private Date updatedTime;
 }

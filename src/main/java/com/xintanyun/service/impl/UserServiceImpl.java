@@ -26,9 +26,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int insertBatch(List<User> users) {
+        return userMapper.insertList(users);
+    }
+
+    @Override
     public int updateById(User user) {
         return userMapper.updateByPrimaryKeySelective(user);
     }
+
 
     @Override
     public User selectByUserId(Long userId) {

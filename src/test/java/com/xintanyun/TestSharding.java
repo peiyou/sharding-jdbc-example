@@ -1,7 +1,7 @@
 package com.xintanyun;
 
-import com.xintanyun.Application;
 import com.xintanyun.entity.Transaction;
+import com.xintanyun.entity.User;
 import com.xintanyun.service.TradeService;
 import com.xintanyun.service.TransactionService;
 import com.xintanyun.service.UserService;
@@ -12,11 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -32,34 +31,31 @@ public class TestSharding {
     private TransactionService transactionService;
 
     @Test
+    public void testInsertUser() {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < 500; i++) {
+            User user = new User();
+            user.setName("张三：" + i);
+            user.setAsset(new BigInteger("0"));
+            user.setCreatedTime(new Date());
+            users.add(user);
+        }
+        userService.insertBatch(users);
+    }
+
+    @Test
     public void testInsertBatch() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Date> dates = new ArrayList<>();
-        List<Transaction> transactions = new ArrayList<>();
-        try {
-            dates.add(simpleDateFormat.parse("2019-10-01 05:05:06"));
-            dates.add(simpleDateFormat.parse("2019-11-01 05:05:06"));
-            dates.add(simpleDateFormat.parse("2019-12-01 05:05:06"));
-            dates.add(simpleDateFormat.parse("2020-01-01 05:05:06"));
-        } catch (ParseException e) {
-            e.printStackTrace();
+        Random random = new Random();
+        for (int i=0; i<300; i++) {
+            int id = random.nextInt(1000) + 3;
+            tradeService.trade(Long.valueOf(id), new BigInteger(String.valueOf(30 * random.nextInt(100))));
         }
-        BigInteger amount = new BigInteger("0");
-        for(int i = 0; i < 1000; i++) {
-            Transaction transaction = new Transaction();
-            transaction.setUserId(1L);
-            transaction.setAmount(new BigInteger("500"));
-            transaction.setCreatedTime(dates.get(i % 4));
-            transactions.add(transaction);
-            amount = amount.add(transaction.getAmount());
-        }
-        tradeService.tradeBatch(1L, amount, transactions);
     }
 
     @Test
     public void testTrade() {
         BigInteger amount = new BigInteger("100");
-        Long userId = 1L;
+        Long userId = 3L;
         tradeService.trade(userId, amount);
 
     }
@@ -80,10 +76,11 @@ public class TestSharding {
 
         System.out.println("==================================");
         System.out.println("==================================");
-        List<Transaction> list2 = transactionService.selectByAllLimit(5, 20);
+        List<Transaction> list2 = transactionService.selectByAllLimit(20L ,5, 20);
         for (Transaction transaction : list2) {
             System.out.println(transaction.getId() + ", " + transaction.getUserId() + ", " + transaction.getAmount() + ", " + transaction.getCreatedTime());
         }
     }
+
 
 }

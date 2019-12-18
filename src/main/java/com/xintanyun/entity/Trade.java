@@ -8,9 +8,10 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
+
 @Getter
 @Setter
-public class Transaction implements Serializable {
+public class Trade implements Serializable {
 
     @Id
     private Long id;
@@ -19,5 +20,11 @@ public class Transaction implements Serializable {
 
     private BigInteger amount;
 
+    private Integer status;
+
+    private Long transactionId;
+
     private Date createdTime;
+
+    private Date updatedTime;
 }

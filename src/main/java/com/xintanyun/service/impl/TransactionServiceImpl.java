@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,11 +18,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public int insertBatch(List<Transaction> transactions) {
-        int num = 0;
-        for(Transaction transaction: transactions) {
-            num += transactionMapper.insertSelective(transaction);
-        }
-        return num;
+        return transactionMapper.insertList(transactions);
     }
 
     @Override
@@ -32,11 +27,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction selectById(Long id, Date createdTime) {
+    public Transaction selectById(Long id, Long userId) {
         Example example = new Example(Transaction.class);
         example.createCriteria()
                 .andEqualTo("id", id)
-                .andEqualTo("createdTime", createdTime);
+                .andEqualTo("userId", userId);
         return transactionMapper.selectOneByExample(example);
     }
 
@@ -46,15 +41,21 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> selectByAllLimit(int page, int size) {
+    public List<Transaction> selectByAllLimit(Long userId, int page, int size) {
         PageHelper.startPage(page, size, false);
         Example example = new Example(Transaction.class);
         example.setOrderByClause(" id desc");
+        example.createCriteria()
+                .andEqualTo("userId", userId);
         return transactionMapper.selectByExample(example);
     }
 
     @Override
     public int update(Transaction transaction) {
-        return transactionMapper.updateByPrimaryKeySelective(transaction);
+        Example example = new Example(Transaction.class);
+        example.createCriteria()
+                .andEqualTo("userId", transaction.getUserId())
+                .andEqualTo("id", transaction.getId());
+        return transactionMapper.updateByExampleSelective(transaction, example);
     }
 }

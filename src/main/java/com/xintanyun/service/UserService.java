@@ -10,6 +10,8 @@ public interface UserService {
 
     int insert(User user);
 
+    int insertBatch(List<User> users);
+
     int updateById(User user);
 
     User selectByUserId(Long userId);
